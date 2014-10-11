@@ -32,6 +32,32 @@ public class SendActivity extends Activity implements OnClickListener {
 
     @SuppressLint("HandlerLeak")
     private class EawResultHandler extends Handler {
+
+        private void postUserInfo(int i) {
+
+            eawIsRunning = false;
+            eaw.stopDetecting();
+
+            switch (i) {
+                case 1:
+                    title.setText(R.string.sending_message_title_gacchiri);
+                    break;
+                case 2:
+                    title.setText(R.string.sending_message_title_keion);
+                    break;
+                case 3:
+                    title.setText(R.string.sending_message_title_fushigi);
+                    break;
+                default:
+                    title.setText(R.string.sending_message_title_gacchiri);
+                    break;
+            }
+            title.setText(R.string.sending_message_title_gacchiri);
+
+            status.setText(R.string.sending_message_status_on);
+            icon.setImageResource(R.drawable.oreimo);
+        }
+
         @Override
         public void handleMessage(Message msg) {
             if (msg.obj instanceof Long)
@@ -40,14 +66,11 @@ public class SendActivity extends Activity implements OnClickListener {
                 // mEawTextLog.append(wmV + "\n");
                 Log.v("hogehoge", String.valueOf(wmV));
                 if (wmV == 1) {
-                    eawIsRunning = false;
-                    // stop
-                    eaw.stopDetecting();
-
-                    title.setText(R.string.sending_message_title_gacchiri);
-                    status.setText(R.string.sending_message_status_on);
-                    icon.setImageResource(R.drawable.oreimo);
-
+                    postUserInfo(1);
+                } else if (wmV == 2) {
+                    postUserInfo(2);
+                } else if (wmV == 3) {
+                    postUserInfo(3);
                 }
             }
             else if (msg.obj instanceof String)
