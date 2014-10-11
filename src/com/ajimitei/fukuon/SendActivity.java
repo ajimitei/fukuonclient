@@ -12,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.evixar.eaw_utilities.EAWSDK;
 
@@ -23,6 +25,10 @@ public class SendActivity extends Activity implements OnClickListener {
 
     private EawResultHandler eawResultHandler = new EawResultHandler();
     private EawErrorHandler eawErrorHandler = new EawErrorHandler();
+
+    TextView title;
+    TextView status;
+    ImageView icon;
 
     @SuppressLint("HandlerLeak")
     private class EawResultHandler extends Handler {
@@ -37,6 +43,10 @@ public class SendActivity extends Activity implements OnClickListener {
                     eawIsRunning = false;
                     // stop
                     eaw.stopDetecting();
+
+                    title.setText(R.string.sending_message_title_gacchiri);
+                    status.setText(R.string.sending_message_status_on);
+                    icon.setImageResource(R.drawable.oreimo);
 
                 }
             }
@@ -89,6 +99,10 @@ public class SendActivity extends Activity implements OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.haishin_fukuon);
+
+        title = (TextView) findViewById(R.id.textView1);
+        status = (TextView) findViewById(R.id.textView2);
+        icon = (ImageView) findViewById(R.id.imageView1);
 
         finishEawInit = false;
         init();
