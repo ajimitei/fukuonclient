@@ -25,13 +25,23 @@ import android.widget.Toast;
 
 import com.evixar.eaw_utilities.EAWSDK;
 
+import jp.tf_web.fukuon.SendAudioRunnable;
+import jp.tf_web.fukuon.network.NetworkAsyncTask;
+import jp.tf_web.fukuon.network.NetworkWork;
+import jp.tf_web.fukuon.network.model.PostUserRequest;
+import jp.tf_web.fukuon.network.model.Response;
+import jp.tf_web.fukuon.network.model.User;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class SendActivity extends Activity implements OnClickListener {
+    private static final String LOG_TAG = "SendActivity";
 
     private EAWSDK eaw;
     private boolean finishEawInit;
@@ -56,6 +66,8 @@ public class SendActivity extends Activity implements OnClickListener {
     ImageButton btn_c;
     ImageButton btn_d;
 
+    private SendAudioRunnable sendAudioRunnable;
+
     @SuppressLint("HandlerLeak")
     private class EawResultHandler extends Handler {
 
@@ -79,8 +91,8 @@ public class SendActivity extends Activity implements OnClickListener {
                     break;
             }
             title.setText(R.string.sending_message_title_gacchiri);
-
             status.setText(R.string.sending_message_status_on);
+            postToServer();
         }
 
         @Override
@@ -178,6 +190,19 @@ public class SendActivity extends Activity implements OnClickListener {
         btn_c.setOnClickListener(this);
         btn_d = (ImageButton) findViewById(R.id.imageButton4);
         btn_d.setOnClickListener(this);
+
+        // 送信先アドレスを設定する
+        InetAddress addr = null;
+        try {
+            addr = InetAddress.getByName("192.168.1.129");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            Log.e(LOG_TAG, e.toString());
+        }
+        Log.e(LOG_TAG, "addr:" + addr);
+        // オーディオ送信 Runnable
+        sendAudioRunnable = new SendAudioRunnable(addr);
+        Log.e(LOG_TAG, "sendAudioRunnable" + sendAudioRunnable);
 
     }
 
@@ -292,12 +317,43 @@ public class SendActivity extends Activity implements OnClickListener {
         super.onPause();
         mSoundPool.release();
 
+        if (sendAudioRunnable != null) {
+            // 録音停止
+            sendAudioRunnable.stopRecording();
+        }
+
         if (eawIsRunning)
             touchEawButton();
         if (finishEawInit) {
             eaw.release();
             finishEawInit = false;
         }
+    }
+
+    private void postToServer() {
+        String server = "192.168.1.178";
+        User user = new User(getUserName(), "/sdcard/Download/user_picture.jpg", "がっちりマンデー!!", 2,
+                getUserDescription(), 0);
+        PostUserRequest req = new PostUserRequest(server, user);
+
+        NetworkWork resultWork = new NetworkWork() {
+            @Override
+            public void response(Response resp) {
+                if (resp == null)
+                    return;
+                // ここで レスポンスからユーザー必要情報を取得する
+                if (resp.getStatus().equals(Response.STATUS_SUCCESS)) {
+                    // オーディオ送信
+                    Thread thrd = new Thread(sendAudioRunnable);
+                    thrd.start();
+                }
+            }
+        };
+
+        // 非同期でRequestを実行
+        NetworkAsyncTask task = new NetworkAsyncTask(resultWork);
+        task.execute(req);
+
     }
 
     @Override

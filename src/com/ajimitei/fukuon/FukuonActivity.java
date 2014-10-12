@@ -3,6 +3,9 @@ package com.ajimitei.fukuon;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -14,6 +17,7 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 
 public class FukuonActivity extends Activity implements OnClickListener {
@@ -133,10 +137,17 @@ public class FukuonActivity extends Activity implements OnClickListener {
                     // SDカードにJPEGデータを保存する
                     if (data != null) {
                         pic_data = data;
+                        Bitmap user_picture = BitmapFactory.decodeByteArray(data, 0, data.length);
+                        user_picture = Bitmap.createScaledBitmap(user_picture, 200, 70, false);
+
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        user_picture.compress(CompressFormat.JPEG, 100, baos);
+                        byte[] bytes = baos.toByteArray();
+
                         FileOutputStream myFOS = null;
                         try {
                             myFOS = new FileOutputStream("/sdcard/Download/user_picture.jpg");
-                            myFOS.write(data);
+                            myFOS.write(bytes);
                             myFOS.close();
                         } catch (Exception e) {
                             e.printStackTrace();
