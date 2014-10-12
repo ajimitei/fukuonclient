@@ -18,6 +18,8 @@ import java.io.FileOutputStream;
 
 public class FukuonActivity extends Activity implements OnClickListener {
 
+    private byte[] pic_data;
+
     private EditText editText_name;
     private EditText editText_description;
     private Camera myCamera;
@@ -111,6 +113,7 @@ public class FukuonActivity extends Activity implements OnClickListener {
 
         Intent intent = new Intent(FukuonActivity.this, SendActivity.class);
         intent.setAction(Intent.ACTION_VIEW);
+        intent.putExtra("pic_data", pic_data);
         startActivity(intent);
 
     }
@@ -129,6 +132,7 @@ public class FukuonActivity extends Activity implements OnClickListener {
                 public void onPictureTaken(byte[] data, Camera camera) {
                     // SDカードにJPEGデータを保存する
                     if (data != null) {
+                        pic_data = data;
                         FileOutputStream myFOS = null;
                         try {
                             myFOS = new FileOutputStream("/sdcard/Download/user_picture.jpg");

@@ -4,7 +4,10 @@ package com.ajimitei.fukuon;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -12,10 +15,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.evixar.eaw_utilities.EAWSDK;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class SendActivity extends Activity implements OnClickListener {
 
@@ -28,7 +39,9 @@ public class SendActivity extends Activity implements OnClickListener {
 
     TextView title;
     TextView status;
-    ImageView icon;
+    ImageView user_photo;
+    Bitmap user_picture;
+    Context context;
 
     @SuppressLint("HandlerLeak")
     private class EawResultHandler extends Handler {
@@ -55,7 +68,6 @@ public class SendActivity extends Activity implements OnClickListener {
             title.setText(R.string.sending_message_title_gacchiri);
 
             status.setText(R.string.sending_message_status_on);
-            icon.setImageResource(R.drawable.oreimo);
         }
 
         @Override
@@ -76,12 +88,10 @@ public class SendActivity extends Activity implements OnClickListener {
             else if (msg.obj instanceof String)
             {
                 String wmV = (String) msg.obj;
-                // mEawTextLog.append(wmV + "\n");
                 Log.v("hogehoge", wmV);
             }
             else if (msg.obj == null)
             {
-                // mEawTextLog.append("not detected\n");
                 Log.v("hogehoge", "hagehage");
             }
         }
@@ -91,8 +101,6 @@ public class SendActivity extends Activity implements OnClickListener {
     private class EawErrorHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
-            // mEawTextLog.append("\nerror\n");
-            // mEawTextLog.append("errcode: " + msg.obj + "\n");
         }
     }
 
@@ -121,11 +129,22 @@ public class SendActivity extends Activity implements OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.haishin_fukuon);
+
+        context = this;
 
         title = (TextView) findViewById(R.id.textView1);
         status = (TextView) findViewById(R.id.textView2);
-        icon = (ImageView) findViewById(R.id.imageView1);
+        user_photo = (ImageView) findViewById(R.id.imageView1);
+
+        Toast.makeText(SendActivity.this, getUserName(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(SendActivity.this, getUserDescription(), Toast.LENGTH_SHORT).show();
+
+        byte[] bytes = getIntent().getExtras().getByteArray("pic_data");
+        user_picture = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        user_picture = Bitmap.createScaledBitmap(user_picture, 800, 800, false);
+        user_photo.setImageBitmap(user_picture);
 
         finishEawInit = false;
         init();
@@ -134,6 +153,66 @@ public class SendActivity extends Activity implements OnClickListener {
         // start
         eaw.startDetecting();
 
+    }
+
+    private String getUserName() {
+
+        File directory = Environment.getExternalStorageDirectory();
+        String filepath = "/sdcard/Download/user_name.txt";
+        BufferedReader br = null;
+        String line = null;
+        try {
+            br = new BufferedReader(new FileReader(filepath));
+            while (br.ready()) {
+                line = br.readLine();
+            }
+        } catch (FileNotFoundException e) {
+            // System.out.println("ファイルが見つかりません。");
+            e.printStackTrace();
+        } catch (IOException e) {
+            // System.out.println("入出力エラーです。");
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    // System.out.println("入出力エラーです。");
+                    e.printStackTrace();
+                }
+            }
+        }
+        return line;
+    }
+
+    private String getUserDescription() {
+
+        File directory = Environment.getExternalStorageDirectory();
+        String filepath = "/sdcard/Download/user_description.txt";
+        BufferedReader br = null;
+        String line = null;
+        try {
+            br = new BufferedReader(new FileReader(filepath));
+            while (br.ready()) {
+                line = br.readLine();
+            }
+        } catch (FileNotFoundException e) {
+            // System.out.println("ファイルが見つかりません。");
+            e.printStackTrace();
+        } catch (IOException e) {
+            // System.out.println("入出力エラーです。");
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    // System.out.println("入出力エラーです。");
+                    e.printStackTrace();
+                }
+            }
+        }
+        return line;
     }
 
     @Override
