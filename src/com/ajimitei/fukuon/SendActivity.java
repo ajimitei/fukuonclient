@@ -28,6 +28,7 @@ import com.evixar.eaw_utilities.EAWSDK;
 import jp.tf_web.fukuon.SendAudioRunnable;
 import jp.tf_web.fukuon.network.NetworkAsyncTask;
 import jp.tf_web.fukuon.network.NetworkWork;
+import jp.tf_web.fukuon.network.model.DeleteUserRequest;
 import jp.tf_web.fukuon.network.model.PostUserRequest;
 import jp.tf_web.fukuon.network.model.Response;
 import jp.tf_web.fukuon.network.model.User;
@@ -328,6 +329,10 @@ public class SendActivity extends Activity implements OnClickListener {
             eaw.release();
             finishEawInit = false;
         }
+
+        // ユーザー削除
+        deleteUser();
+
     }
 
     private void postToServer() {
@@ -343,6 +348,10 @@ public class SendActivity extends Activity implements OnClickListener {
                     return;
                 // ここで レスポンスからユーザー必要情報を取得する
                 if (resp.getStatus().equals(Response.STATUS_SUCCESS)) {
+                    // PostUserResponse postUserResponse = (PostUserResponse)
+                    // resp;
+                    // loginUser = postUserResponse.getUser();
+
                     // オーディオ送信
                     Thread thrd = new Thread(sendAudioRunnable);
                     thrd.start();
@@ -360,12 +369,44 @@ public class SendActivity extends Activity implements OnClickListener {
     protected void onStop() {
         super.onStop();
 
+        if (sendAudioRunnable != null) {
+            // 録音停止
+            sendAudioRunnable.stopRecording();
+        }
+
         if (eawIsRunning)
             touchEawButton();
         if (finishEawInit) {
             eaw.release();
             finishEawInit = false;
         }
+        // ユーザー削除
+        deleteUser();
     }
 
+    // ログイン中のユーザー
+    User loginUser = null;
+
+    private void deleteUser() {
+        if (loginUser == null) {
+            return;
+        }
+        String server = "192.168.1.178";
+        DeleteUserRequest req = new DeleteUserRequest(server, loginUser);
+        NetworkWork resultWork = new NetworkWork() {
+            @Override
+            public void response(Response resp) {
+                if (resp == null)
+                    return;
+                // ここで レスポンスからユーザー必要情報を取得する
+                if (resp.getStatus().equals(Response.STATUS_SUCCESS)) {
+                    //
+                }
+            }
+        };
+
+        // 非同期でRequestを実行
+        NetworkAsyncTask task = new NetworkAsyncTask(resultWork);
+        task.execute(req);
+    }
 }

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapRegionDecoder;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -19,6 +21,7 @@ import android.widget.ImageButton;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class FukuonActivity extends Activity implements OnClickListener {
 
@@ -77,20 +80,6 @@ public class FukuonActivity extends Activity implements OnClickListener {
 
     }
 
-    /*
-     * @Override public boolean onCreateOptionsMenu(Menu menu) { // Inflate the
-     * menu; this adds items to the action bar if it is present.
-     * getMenuInflater().inflate(R.menu.fukuon, menu); return true; }
-     */
-    /*
-     * @Override public boolean onOptionsItemSelected(MenuItem item) { // Handle
-     * action bar item clicks here. The action bar will // automatically handle
-     * clicks on the Home/Up button, so long // as you specify a parent activity
-     * in AndroidManifest.xml. int id = item.getItemId(); if (id ==
-     * R.id.action_settings) { return true; } return
-     * super.onOptionsItemSelected(item); }
-     */
-
     @Override
     public void onClick(View arg0) {
         if (editText_name != null) {
@@ -138,10 +127,27 @@ public class FukuonActivity extends Activity implements OnClickListener {
                     if (data != null) {
                         pic_data = data;
                         Bitmap user_picture = BitmapFactory.decodeByteArray(data, 0, data.length);
-                        user_picture = Bitmap.createScaledBitmap(user_picture, 200, 70, false);
+
+                        BitmapRegionDecoder regionDecoder = null;
+                        try {
+                            regionDecoder = BitmapRegionDecoder.newInstance(data, 0, data.length,
+                                    false);
+                        } catch (IOException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
+                        Rect rect = new Rect(0, 400, 800, 680);
+                        Bitmap bitmap = regionDecoder.decodeRegion(rect, null);
+
+                        // user_picture =
+                        // Bitmap.createScaledBitmap(user_picture, 400, 140,
+                        // false);
+                        bitmap = Bitmap.createScaledBitmap(bitmap, 400, 140, false);
 
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        user_picture.compress(CompressFormat.JPEG, 100, baos);
+                        // user_picture.compress(CompressFormat.JPEG, 100,
+                        // baos);
+                        bitmap.compress(CompressFormat.JPEG, 100, baos);
                         byte[] bytes = baos.toByteArray();
 
                         FileOutputStream myFOS = null;
