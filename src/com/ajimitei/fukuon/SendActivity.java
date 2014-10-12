@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -16,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,7 +44,17 @@ public class SendActivity extends Activity implements OnClickListener {
     TextView status;
     ImageView user_photo;
     Bitmap user_picture;
-    Context context;
+
+    private SoundPool mSoundPool;
+    private int mSoundIdA;
+    private int mSoundIdB;
+    private int mSoundIdC;
+    private int mSoundIdD;
+
+    ImageButton btn_a;
+    ImageButton btn_b;
+    ImageButton btn_c;
+    ImageButton btn_d;
 
     @SuppressLint("HandlerLeak")
     private class EawResultHandler extends Handler {
@@ -132,8 +145,6 @@ public class SendActivity extends Activity implements OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.haishin_fukuon);
 
-        context = this;
-
         title = (TextView) findViewById(R.id.textView1);
         status = (TextView) findViewById(R.id.textView2);
         user_photo = (ImageView) findViewById(R.id.imageView1);
@@ -152,6 +163,21 @@ public class SendActivity extends Activity implements OnClickListener {
         eawIsRunning = true;
         // start
         eaw.startDetecting();
+
+        mSoundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+        mSoundIdA = mSoundPool.load(getApplicationContext(), R.raw.sound_a, 0);
+        mSoundIdB = mSoundPool.load(getApplicationContext(), R.raw.sound_g, 0);
+        mSoundIdC = mSoundPool.load(getApplicationContext(), R.raw.sound_p, 0);
+        mSoundIdD = mSoundPool.load(getApplicationContext(), R.raw.sound_u, 0);
+
+        btn_a = (ImageButton) findViewById(R.id.imageButton1);
+        btn_a.setOnClickListener(this);
+        btn_b = (ImageButton) findViewById(R.id.imageButton2);
+        btn_b.setOnClickListener(this);
+        btn_c = (ImageButton) findViewById(R.id.imageButton3);
+        btn_c.setOnClickListener(this);
+        btn_d = (ImageButton) findViewById(R.id.imageButton4);
+        btn_d.setOnClickListener(this);
 
     }
 
@@ -236,8 +262,21 @@ public class SendActivity extends Activity implements OnClickListener {
     }
 
     @Override
-    public void onClick(View arg0) {
-
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.imageButton1:
+                mSoundPool.play(mSoundIdA, 1.0F, 1.0F, 0, 0, 1.0F);
+                break;
+            case R.id.imageButton2:
+                mSoundPool.play(mSoundIdB, 1.0F, 1.0F, 0, 0, 1.0F);
+                break;
+            case R.id.imageButton3:
+                mSoundPool.play(mSoundIdC, 1.0F, 1.0F, 0, 0, 1.0F);
+                break;
+            case R.id.imageButton4:
+                mSoundPool.play(mSoundIdD, 1.0F, 1.0F, 0, 0, 1.0F);
+                break;
+        }
     }
 
     @Override
@@ -251,6 +290,7 @@ public class SendActivity extends Activity implements OnClickListener {
     @Override
     protected void onPause() {
         super.onPause();
+        mSoundPool.release();
 
         if (eawIsRunning)
             touchEawButton();
