@@ -76,22 +76,29 @@ public class SendActivity extends Activity implements OnClickListener {
 
             eawIsRunning = false;
             eaw.stopDetecting();
+            Log.v("postUserInfo", String.valueOf(i));
 
             switch (i) {
                 case 1:
                     title.setText(R.string.sending_message_title_gacchiri);
                     break;
                 case 2:
-                    title.setText(R.string.sending_message_title_keion);
+                    title.setText(R.string.sending_message_title_fushigi);
                     break;
                 case 3:
-                    title.setText(R.string.sending_message_title_fushigi);
+                    title.setText(R.string.sending_message_title_chubo);
+                    break;
+                case 4:
+                    title.setText(R.string.sending_message_title_locodol);
+                    break;
+                case 5:
+                    title.setText(R.string.sending_message_title_nihon);
                     break;
                 default:
                     title.setText(R.string.sending_message_title_gacchiri);
                     break;
             }
-            title.setText(R.string.sending_message_title_gacchiri);
+            // title.setText(R.string.sending_message_title_gacchiri);
             status.setText(R.string.sending_message_status_on);
             postToServer();
         }
@@ -109,6 +116,10 @@ public class SendActivity extends Activity implements OnClickListener {
                     postUserInfo(2);
                 } else if (wmV == 3) {
                     postUserInfo(3);
+                } else if (wmV == 4) {
+                    postUserInfo(4);
+                } else if (wmV == 5) {
+                    postUserInfo(5);
                 }
             }
             else if (msg.obj instanceof String)
@@ -195,7 +206,9 @@ public class SendActivity extends Activity implements OnClickListener {
         // 送信先アドレスを設定する
         InetAddress addr = null;
         try {
-            addr = InetAddress.getByName("192.168.1.129");
+            // addr = InetAddress.getByName("192.168.1.129");
+            // addr = InetAddress.getByName("192.168.10.5");
+            addr = InetAddress.getByName("172.20.10.5");
         } catch (UnknownHostException e) {
             e.printStackTrace();
             Log.e(LOG_TAG, e.toString());
@@ -336,7 +349,8 @@ public class SendActivity extends Activity implements OnClickListener {
     }
 
     private void postToServer() {
-        String server = "192.168.1.178";
+        // String server = "192.168.1.178";
+        String server = "nodejs.moe.hm";
         User user = new User(getUserName(), "/sdcard/Download/user_picture.jpg", "がっちりマンデー!!", 2,
                 getUserDescription(), 0);
         PostUserRequest req = new PostUserRequest(server, user);

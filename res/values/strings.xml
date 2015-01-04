@@ -12,6 +12,9 @@
     <string name="sending_id_title_gacchiri">show_id_gacchiri</string>
     <string name="sending_message_title_keion">けいおん！</string>
     <string name="sending_message_title_fushigi">世界ふしぎ発見！</string>
+    <string name="sending_message_title_chubo">チューボーですよ！</string>
+    <string name="sending_message_title_nihon">サッカー日本代表戦</string>
+    <string name="sending_message_title_locodol">ろこどるやってみた</string>
     <string name="sending_message_status_off">配信準備中</string>
     <string name="sending_message_status_on">副音声配信中</string>
     <string name="sending_message_off_button">OFF</string>
