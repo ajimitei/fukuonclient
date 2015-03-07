@@ -102,7 +102,7 @@ public class SendActivity extends Activity implements OnClickListener {
 
             title.setText(mProgramId);
             status.setText(R.string.sending_message_status_on);
-            postToServer(getString(mProgramId));
+            postToServer(i, getString(mProgramId));
         }
 
         @Override
@@ -350,11 +350,11 @@ public class SendActivity extends Activity implements OnClickListener {
 
     }
 
-    private void postToServer(String programTitle) {
+    private void postToServer(int programId, String programTitle) {
         // String server = "192.168.1.178";
         String server = "nodejs.moe.hm";
-        User user = new User(getUserName(), "/sdcard/Download/user_picture.jpg", programTitle, 2,
-                getUserDescription(), 0);
+        User user = new User(getUserName(), "/sdcard/Download/user_picture.jpg", programTitle,
+                programId, getUserDescription(), 0);
         PostUserRequest req = new PostUserRequest(server, user);
 
         NetworkWork resultWork = new NetworkWork() {
