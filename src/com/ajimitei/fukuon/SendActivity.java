@@ -61,6 +61,7 @@ public class SendActivity extends Activity implements OnClickListener {
     private int mSoundIdB;
     private int mSoundIdC;
     private int mSoundIdD;
+    private int mProgramId;
 
     ImageButton btn_a;
     ImageButton btn_b;
@@ -80,27 +81,28 @@ public class SendActivity extends Activity implements OnClickListener {
 
             switch (i) {
                 case 1:
-                    title.setText(R.string.sending_message_title_gacchiri);
+                    mProgramId = R.string.sending_message_title_gacchiri;
                     break;
                 case 2:
-                    title.setText(R.string.sending_message_title_fushigi);
+                    mProgramId = R.string.sending_message_title_fushigi;
                     break;
                 case 3:
-                    title.setText(R.string.sending_message_title_chubo);
+                    mProgramId = R.string.sending_message_title_chubo;
                     break;
                 case 4:
-                    title.setText(R.string.sending_message_title_locodol);
+                    mProgramId = R.string.sending_message_title_locodol;
                     break;
                 case 5:
-                    title.setText(R.string.sending_message_title_nihon);
+                    mProgramId = R.string.sending_message_title_nihon;
                     break;
                 default:
-                    title.setText(R.string.sending_message_title_gacchiri);
+                    mProgramId = R.string.sending_message_title_gacchiri;
                     break;
             }
-            // title.setText(R.string.sending_message_title_gacchiri);
+
+            title.setText(mProgramId);
             status.setText(R.string.sending_message_status_on);
-            postToServer();
+            postToServer(getString(mProgramId));
         }
 
         @Override
@@ -348,10 +350,10 @@ public class SendActivity extends Activity implements OnClickListener {
 
     }
 
-    private void postToServer() {
+    private void postToServer(String programTitle) {
         // String server = "192.168.1.178";
         String server = "nodejs.moe.hm";
-        User user = new User(getUserName(), "/sdcard/Download/user_picture.jpg", "がっちりマンデー!!", 2,
+        User user = new User(getUserName(), "/sdcard/Download/user_picture.jpg", programTitle, 2,
                 getUserDescription(), 0);
         PostUserRequest req = new PostUserRequest(server, user);
 
