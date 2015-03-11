@@ -3,6 +3,7 @@ package com.ajimitei.fukuon;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -27,8 +28,15 @@ public class FukuonActivity extends Activity implements OnClickListener {
 
     private byte[] pic_data;
 
+    private EditText editText_ipaddress;
     private EditText editText_name;
     private EditText editText_description;
+
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
+    private static final String PREF_KEY = "fukuonpreferences";
+    private static final String KEY_TEXT = "fukuonip";
+
     private Camera myCamera;
     private SurfaceHolder.Callback mSurfaceListener =
             new SurfaceHolder.Callback() {
@@ -67,6 +75,8 @@ public class FukuonActivity extends Activity implements OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_fukuon);
 
+        pref = getSharedPreferences(PREF_KEY, Activity.MODE_PRIVATE);
+
         SurfaceView mySurfaceView = (SurfaceView) findViewById(R.id.surfaceView1);
         SurfaceHolder holder = mySurfaceView.getHolder();
         holder.addCallback(mSurfaceListener);
@@ -74,6 +84,7 @@ public class FukuonActivity extends Activity implements OnClickListener {
 
         editText_name = (EditText) this.findViewById(R.id.editText1);
         editText_description = (EditText) this.findViewById(R.id.editText2);
+        editText_ipaddress = (EditText) this.findViewById(R.id.editText3);
 
         ImageButton btn = (ImageButton) findViewById(R.id.button1);
         btn.setOnClickListener(this);
@@ -102,6 +113,12 @@ public class FukuonActivity extends Activity implements OnClickListener {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        if (editText_ipaddress != null) {
+            editor = pref.edit();
+            editor.putString(KEY_TEXT, editText_ipaddress.getText().toString());
+            editor.commit();
         }
 
         Intent intent = new Intent(FukuonActivity.this, SendActivity.class);

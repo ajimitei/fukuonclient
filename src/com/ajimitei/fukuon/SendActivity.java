@@ -4,6 +4,7 @@ package com.ajimitei.fukuon;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -47,6 +48,10 @@ public class SendActivity extends Activity implements OnClickListener {
     private EAWSDK eaw;
     private boolean finishEawInit;
     private boolean eawIsRunning;
+
+    SharedPreferences pref;
+    private static final String PREF_KEY = "fukuonpreferences";
+    private static final String KEY_TEXT = "fukuonip";
 
     private EawResultHandler eawResultHandler = new EawResultHandler();
     private EawErrorHandler eawErrorHandler = new EawErrorHandler();
@@ -171,6 +176,8 @@ public class SendActivity extends Activity implements OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.haishin_fukuon);
 
+        pref = getSharedPreferences(PREF_KEY, Activity.MODE_PRIVATE);
+
         title = (TextView) findViewById(R.id.textView1);
         status = (TextView) findViewById(R.id.textView2);
         user_photo = (ImageView) findViewById(R.id.imageView1);
@@ -208,9 +215,8 @@ public class SendActivity extends Activity implements OnClickListener {
         // 送信先アドレスを設定する
         InetAddress addr = null;
         try {
-            // addr = InetAddress.getByName("192.168.1.129");
-            // addr = InetAddress.getByName("192.168.10.5");
-            addr = InetAddress.getByName("172.20.10.5");
+            addr = InetAddress.getByName((pref.getString(KEY_TEXT, "")));
+            // addr = InetAddress.getByName("172.20.10.5");
         } catch (UnknownHostException e) {
             e.printStackTrace();
             Log.e(LOG_TAG, e.toString());
@@ -407,7 +413,9 @@ public class SendActivity extends Activity implements OnClickListener {
         if (loginUser == null) {
             return;
         }
-        String server = "192.168.1.178";
+        // String server = "192.168.1.178";
+        String server = "nodejs.moe.hm";
+
         DeleteUserRequest req = new DeleteUserRequest(server, loginUser);
         NetworkWork resultWork = new NetworkWork() {
             @Override
