@@ -31,6 +31,7 @@ import jp.tf_web.fukuon.network.NetworkAsyncTask;
 import jp.tf_web.fukuon.network.NetworkWork;
 import jp.tf_web.fukuon.network.model.DeleteUserRequest;
 import jp.tf_web.fukuon.network.model.PostUserRequest;
+import jp.tf_web.fukuon.network.model.PostUserResponse;
 import jp.tf_web.fukuon.network.model.Response;
 import jp.tf_web.fukuon.network.model.User;
 
@@ -370,9 +371,9 @@ public class SendActivity extends Activity implements OnClickListener {
                     return;
                 // ここで レスポンスからユーザー必要情報を取得する
                 if (resp.getStatus().equals(Response.STATUS_SUCCESS)) {
-                    // PostUserResponse postUserResponse = (PostUserResponse)
-                    // resp;
-                    // loginUser = postUserResponse.getUser();
+                    PostUserResponse postUserResponse = (PostUserResponse) resp;
+                    loginUser = postUserResponse.getUser();
+                    Log.v("response", "set loginUser");
 
                     // オーディオ送信
                     Thread thrd = new Thread(sendAudioRunnable);
