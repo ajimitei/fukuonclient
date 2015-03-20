@@ -117,7 +117,7 @@ public class SendActivity extends Activity implements OnClickListener {
             {
                 long wmV = ((Long) msg.obj).longValue();
                 // mEawTextLog.append(wmV + "\n");
-                Log.v("hogehoge", String.valueOf(wmV));
+                Log.v(LOG_TAG, String.valueOf(wmV));
                 if (wmV == 1) {
                     postUserInfo(1);
                 } else if (wmV == 2) {
@@ -133,11 +133,11 @@ public class SendActivity extends Activity implements OnClickListener {
             else if (msg.obj instanceof String)
             {
                 String wmV = (String) msg.obj;
-                Log.v("hogehoge", wmV);
+                Log.v(LOG_TAG, wmV);
             }
             else if (msg.obj == null)
             {
-                Log.v("hogehoge", "hagehage");
+                Log.v(LOG_TAG, "msg.obj is null");
             }
         }
     }

@@ -11,6 +11,7 @@ import android.graphics.BitmapRegionDecoder;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -25,7 +26,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class FukuonActivity extends Activity implements OnClickListener {
-
+	private static String TAG = "FukuonActivity";
+	
     private byte[] pic_data;
 
     private EditText editText_ipaddress;
@@ -61,7 +63,7 @@ public class FukuonActivity extends Activity implements OnClickListener {
                     // TODO Auto-generated method stub
                     Camera.Parameters parameters = myCamera.getParameters();
                     // parameters.setPreviewSize(width, height);
-                    parameters.setPreviewSize(640, 480);
+                    //parameters.setPreviewSize(640, 480);
                     parameters.setRotation(270);
                     myCamera.setDisplayOrientation(90);
                     myCamera.setParameters(parameters);
@@ -144,23 +146,29 @@ public class FukuonActivity extends Activity implements OnClickListener {
                     if (data != null) {
                         pic_data = data;
                         Bitmap user_picture = BitmapFactory.decodeByteArray(data, 0, data.length);
-
-                        BitmapRegionDecoder regionDecoder = null;
+                        Log.d(TAG,"user_picture w:"+user_picture.getWidth()+" h:"+user_picture.getHeight());
+                        
+                        Bitmap bitmap = null;
                         try {
-                            regionDecoder = BitmapRegionDecoder.newInstance(data, 0, data.length,
-                                    false);
+                        	BitmapRegionDecoder regionDecoder = BitmapRegionDecoder.newInstance(data, 0, data.length, false);
+                        	int t = (user_picture.getWidth() < 400)?0:400;
+                        	int r = (user_picture.getWidth() < 800)?user_picture.getWidth():800;
+                        	int b = (user_picture.getHeight() < 680)?user_picture.getHeight():680;
+                            Rect rect = new Rect(0, t, r, b);
+                            Log.d(TAG,"rect t:"+rect.top+" r:"+rect.right+" b:"+rect.bottom);
+                            bitmap = regionDecoder.decodeRegion(rect, null);
+
                         } catch (IOException e1) {
                             // TODO Auto-generated catch block
                             e1.printStackTrace();
                         }
-                        Rect rect = new Rect(0, 400, 800, 680);
-                        Bitmap bitmap = regionDecoder.decodeRegion(rect, null);
 
-                        // user_picture =
-                        // Bitmap.createScaledBitmap(user_picture, 400, 140,
-                        // false);
-                        bitmap = Bitmap.createScaledBitmap(bitmap, 400, 140, false);
-
+                        if(bitmap == null) {
+                        	bitmap = user_picture;
+                        }
+                        else{
+                        	bitmap = Bitmap.createScaledBitmap(bitmap, 400, 140, false);
+                        }
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         // user_picture.compress(CompressFormat.JPEG, 100,
                         // baos);
